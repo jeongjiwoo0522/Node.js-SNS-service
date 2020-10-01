@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 
 const { isLoggedIn, isNotLoggedIn } = require("./middleware");
 const { User } = require("../models");
-const { noExtendLeft } = require("sequelize/types/lib/operators");
 const passport = require("passport");
 
 const router = express.Router();

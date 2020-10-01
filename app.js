@@ -6,16 +6,25 @@ const dotenv = require("dotenv");
 const nunjucks = require("nunjucks");
 const session = require("express-session");
 const passport = require("passport");
+const fs = require("fs");
 
 dotenv.config();
 
 const  { sequelize } = require("./models");
 const indexRouter = require('./routes/index');
+const authRouter = require("./routes/auth");
 const passportConfig = require("./passport");
 
 const app = express();
 
 passportConfig();
+
+try {
+    fs.readdirSync("uploads");
+} catch(err) {
+    console.log("uploads 폴더 생성");
+    fs.mkdirSync("uploads");
+}
 
 app.set("port", process.env.PORT || 8001);
 app.set("view engine", "html");
@@ -42,6 +51,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', indexRouter);
+app.use("/auth", authRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
