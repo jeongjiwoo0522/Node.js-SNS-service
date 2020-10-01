@@ -4,23 +4,31 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 const User = require("./users");
-const Comment = require("./comments");
+const Post = require("./posts");
 const Hashtag = require("./hashtags");
+const PostHashtag = require("./posthashtags");
+const Follow = require("./follows");
 
 sequelize = new Sequelize(config.database, config.username, config.password, config);
 
 db.sequelize = sequelize;
 
 db.User = User;
-db.Comment = Comment,
+db.Post = Post,
 db.Hashtag = Hashtag,
+db.PostHashtag = PostHashtag;
+db.Follow = Follow;
 
 User.init(sequelize);
-Comment.init(sequelize);
+Post.init(sequelize);
 Hashtag.init(sequelize);
+PostHashtag.init(sequelize);
+Follow.init(sequelize);
 
 User.associate(db);
-Comment.associate(db);
+Post.associate(db);
 Hashtag.associate(db);
+PostHashtag.associate(db);
+Follow.associate(db);
 
 module.exports = db;

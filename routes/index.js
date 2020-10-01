@@ -20,8 +20,4 @@ router.get("/profile", (req, res) => {
   res.render("profile", { title: "회원가입 - NodeBird"});
 });
 
-router.post("/post", (req, res) => {
-  
-});
-
 module.exports = router;
