@@ -1,12 +1,10 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const { route } = require(".");
 
-const { isLoggedIn, isNotLoggedIn } = require("./middleware");
+const { isLoggedIn } = require("./middleware");
 
 const { Post, Hashtag, PostHashtag } = require("../models");
-const { nextTick } = require("process");
 
 const upload = multer({
     storage: multer.diskStorage({

@@ -3,7 +3,6 @@ const router = express.Router();
 
 const { isNotLoggedIn, isLoggedIn } = require("./middleware");
 const { Post, User, Hashtag, PostHashtag } = require("../models");
-const { precompileString } = require('nunjucks');
 
 /* GET home page. */
 
