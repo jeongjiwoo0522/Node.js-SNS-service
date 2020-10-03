@@ -7,7 +7,6 @@ const { Post, User, Hashtag, PostHashtag } = require("../models");
 /* GET home page. */
 
 router.use((req, res, next) => {
-  console.log(req.user);
   res.locals.user = req.user;
   res.locals.followerCount = req.user ? req.user.Followers.length : 0;
   res.locals.followingCount = req.user ? req.user.Followings.length : 0;
