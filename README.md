@@ -1,4 +1,4 @@
-# Node.js sns service 
+# Node.js SNS service 
 
 * MySQL
 * sequelize
