@@ -22,12 +22,16 @@ const upload = multer({
 const router = express.Router();
 
 router.post("/img", isLoggedIn, upload.single("img"), (req, res) => {
+    console.log(req.file);
+    console.log(req.body);
     res.json({ url: `img/${req.file.filename}` });
 });
 
 const upload2 = multer();
 
 router.post("/", isLoggedIn, upload2.none(), async (req, res, next) => {
+    console.log(req.file);
+    console.log(req.body);
     const { content, url } = req.body;
     
     try {
