@@ -1,19 +1,25 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const multerS3 = require("multer-s3");
+const AWS = require("aws-sdk");
 
 const { isLoggedIn } = require("./middleware");
 
 const { Post, Hashtag, PostHashtag } = require("../models");
 
+AWS.config.update({
+    accessKeyId: S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    region: "ap-northeast-2",
+});
+
 const upload = multer({
-    storage: multer.diskStorage({
-        destination(req, file, done) {
-            done(null, "uploads/");
-        },
-        filename(req, file, done) {
-            const ext = path.extname(file.originalname);
-            done(null, path.basename(file.originalname, ext) + Date.now() + ext);
+    storage: multerS3({
+        s3: new AWS.Sb3(),
+        bucket: "ddyzd",
+        key(req, file, cb) {
+            cb(null, `original/${Date.now()}${path.basename(file.originalname)}`);
         },
     }),
     limits: { fileSize: 5 * 1024 * 1024 },
