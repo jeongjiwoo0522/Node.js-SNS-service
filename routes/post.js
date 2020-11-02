@@ -9,14 +9,14 @@ const { isLoggedIn } = require("./middleware");
 const { Post, Hashtag, PostHashtag } = require("../models");
 
 AWS.config.update({
-    accessKeyId: S3_ACCESS_KEY_ID,
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
     region: "ap-northeast-2",
 });
 
 const upload = multer({
     storage: multerS3({
-        s3: new AWS.Sb3(),
+        s3: new AWS.S3(),
         bucket: "ddyzd",
         key(req, file, cb) {
             cb(null, `original/${Date.now()}${path.basename(file.originalname)}`);
@@ -30,7 +30,7 @@ const router = express.Router();
 router.post("/img", isLoggedIn, upload.single("img"), (req, res) => {
     console.log(req.file);
     console.log(req.body);
-    res.json({ url: `img/${req.file.filename}` });
+    res.json({ url: req.file.location });
 });
 
 const upload2 = multer();
