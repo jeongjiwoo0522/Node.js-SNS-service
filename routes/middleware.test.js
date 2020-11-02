@@ -38,7 +38,7 @@ describe("isNotLoggedIn", () => {
   });
   test("로그인되어 있지 않으면 inNotLoggedIn이 next를 호출해야 함", () => {
     const req = {
-      isAuthenticated: jest.fn(() => falsep),
+      isAuthenticated: jest.fn(() => false),
     };
     isNotLoggedIn(req, res, next);
     expect(next).toBeCalledTimes(1);  
