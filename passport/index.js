@@ -1,11 +1,13 @@
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 const LocalStrategy = require("passport-local").Strategy;
+const KakaoStrategy = require("passport-kakao").Strategy;
 
 const { User, Follow } = require("../models");
 
 module.exports = function() {
     passport.serializeUser((user, done) => {
+        console.log(user);
         done(null, user.id);
     });
 
@@ -71,6 +73,32 @@ module.exports = function() {
         } catch(err) {
             console.error(err);
             done(err);
+        }
+    }));
+
+    passport.use(new KakaoStrategy({
+        clientID: process.env.KAKAO_ID,
+        callbackURL: "/auth/kakao/callback",
+    }, async (accessToken, refreshToken, profile, cb) => {
+        console.log(profile);
+        try {
+            const exUser = await User.findOne({
+                where: { snsId: profile.id, provider: "kakao" },
+            });
+            if(exUser) {
+                return cb(null, exUser);
+            } else {
+                const newUser = await User.create({
+                    email: profile._json.kaccount_email,
+                    nick: profile.displayName,
+                    snsId: profile.id,
+                    provider: "kakao",
+                });
+                cb(null, newUser);
+            }
+        } catch(err) {
+            console.error(err);
+            cb(err);
         }
     }));
 };

@@ -46,6 +46,14 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
     }   
 });
 
+router.get("/kakao", passport.authenticate("kakao"));
+router.get("/kakao/callback", passport.authenticate("kakao", {
+    failureRedirect: "/",
+}), (req, res) => {
+    console.log(req.user);
+    res.redirect("/");
+});
+
 router.get("/logout", (req, res) => {
     req.logout();
     req.session.destroy();
