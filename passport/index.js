@@ -7,51 +7,11 @@ const { User, Follow } = require("../models");
 
 module.exports = function() {
     passport.serializeUser((user, done) => {
-        console.log(user);
-        done(null, user.id);
+        done(null, user);
     });
 
-    passport.deserializeUser(async (id, done) => {
-        try {
-            const user = await User.findOne({ where: { id }});
-
-            const followingIds = await Follow.findAll({
-                attributes: ["FollowingId"],
-                where: { FollowerId: user.id },
-            });
-
-
-            const Followings = await Promise.all(
-                followingIds.map(f => {
-                    return User.findOne({ 
-                        where: { id: f.FollowingId },
-                        attributes: ["id", "nick"],
-                    });
-                })
-            );
-            user.dataValues.Followings = Followings;
-
-            const followerIds = await Follow.findAll({
-                attributes: ["FollowerId"],
-                where: { FollowingId: user.id },
-            });
-            
-
-            const Followers = await Promise.all(
-                followerIds.map(f => {
-                    return User.findOne({     
-                        where: { id: f.FollowerId },
-                        attributes: ["id", "nick"],
-                    });
-                })
-            );
-            user.dataValues.Followers = Followers;
-
-            done(null, user.dataValues);
-        } catch(err) {
-            console.log(err);  
-            done(err);
-        }
+    passport.deserializeUser(async (obj, done) => {
+        done(obj);
     });
 
     passport.use(new LocalStrategy({ 

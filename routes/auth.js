@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const { isNotLoggedIn } = require("./middleware");
 const { User } = require("../models");
@@ -21,7 +22,16 @@ router.post("/login", (req, res, next) => {
                 console.error(loginError);
                 return next(loginError);
             }
-            return res.redirect("/");
+            console.log(user);
+            const token = jwt.sign({
+                id: user.dataValues.id,
+            }, process.env.JWT_SECRET, {
+                issuer: "node",
+                expiresIn: "1m",
+            });
+            console.log(token);
+            res.cookie("JWT", token);
+            return res.redirect("/");   
         });
     })(req, res, next);
 });
