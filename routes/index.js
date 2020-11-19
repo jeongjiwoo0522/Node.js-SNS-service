@@ -1,10 +1,8 @@
 const express = require('express');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
+const { Post, User, Hashtag } = require('../models');
+
 const router = express.Router();
-
-const { isNotLoggedIn, isLoggedIn } = require("./middleware");
-const { Post, User, Hashtag, PostHashtag } = require("../models");
-
-/* GET home page. */
 
 router.use((req, res, next) => {
   res.locals.user = req.user;
@@ -14,17 +12,25 @@ router.use((req, res, next) => {
   next();
 });
 
+router.get('/profile', isLoggedIn, (req, res) => {
+  res.render('profile', { title: '내 정보 - NodeBird' });
+});
+
+router.get('/join', isNotLoggedIn, (req, res) => {
+  res.render('join', { title: '회원가입 - NodeBird' });
+});
+
 router.get('/', async (req, res, next) => {
   try {
     const posts = await Post.findAll({
       include: {
         model: User,
-        attributes: ["id", "nick"]
+        attributes: ['id', 'nick'],
       },
-      order: [["createdAt", "DESC"]],
+      order: [['createdAt', 'DESC']],
     });
-    res.render('main', { 
-      title: 'Express',
+    res.render('main', {
+      title: 'NodeBird',
       twits: posts,
     });
   } catch (err) {
@@ -33,51 +39,26 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get("/hashtag", async (req, res, next) => {
+router.get('/hashtag', async (req, res, next) => {
   const query = req.query.hashtag;
-  if(!query){
-    return res.redirect("/");
+  if (!query) {
+    return res.redirect('/');
   }
   try {
-    const hashtag = await Hashtag.findOne({ where: { title: query }});
-
+    const hashtag = await Hashtag.findOne({ where: { title: query } });
     let posts = [];
-
-    if(hashtag) {
-      const postIds = await PostHashtag.findAll({
-        where: { HashtagId: hashtag.id },
-        attributes: ["PostId"],
-      });
-
-      posts = await Promise.all(
-        postIds.map(p => {
-          return Post.findOne({ 
-            where: { id: p.PostId },
-            include: {
-              model: User,
-              attributes: ["id", "nick"],
-            },
-          });
-        })
-      );
+    if (hashtag) {
+      posts = await hashtag.getPosts({ include: [{ model: User }] });
     }
 
-    res.render("main", {
+    return res.render('main', {
       title: `${query} | NodeBird`,
       twits: posts,
     });
-  } catch(err) {
-    console.error(err);
-    next(err);
+  } catch (error) {
+    console.error(error);
+    return next(error);
   }
-});
-
-router.get("/join", isNotLoggedIn, (req, res) => {
-  res.render("join", { title: "회원가입 - NodeBird"});
-});
-
-router.get("/profile", isLoggedIn, (req, res) => {
-  res.render("profile", { title: "내 정보 - NodeBird"});
 });
 
 module.exports = router;
